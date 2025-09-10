@@ -1,0 +1,85 @@
+<div class="container">
+  <div class="header">
+    <h1>Мини-Трекер Задач</h1>
+    <p>Простое приложение для управления задачами</p>
+  </div>
+
+  <div class="add-task-button">
+    <p-button label="Добавить задачу" icon="pi pi-plus" (click)="showAddDialog()" styleClass="p-button-success">
+    </p-button>
+  </div>
+
+  <p-table [value]="tasks()" [loading]="loading()" styleClass="p-datatable-striped">
+
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 150px">ID Задачи</th>
+        <th>Название</th>
+        <th style="width: 150px">Статус</th>
+        <th style="width: 120px">Выполнена</th>
+        <th style="width: 100px">Действия</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-task>
+      <tr>
+        <td>
+          <span class="task-id">{{ task.id.substring(0, 8) }}...</span>
+        </td>
+        <td>
+          <span [class.completed-task]="task.completed">{{ task.title }}</span>
+        </td>
+        <td>
+          <span class="status-badge" [class.status-completed]="task.completed" [class.status-pending]="!task.completed">
+            {{ getStatusText(task.completed) }}
+          </span>
+        </td>
+        <td>
+          <p-checkbox [binary]="true" [ngModel]="task.completed" (onChange)="toggleTaskCompleted(task)">
+          </p-checkbox>
+        </td>
+        <td>
+          <p-button icon="pi pi-trash" styleClass="p-button-danger p-button-text p-button-sm" (click)="deleteTask(task)"
+            pTooltip="Удалить задачу">
+          </p-button>
+        </td>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="emptymessage">
+      <tr>
+        <td colspan="5" class="text-center">
+          <div class="empty-state">
+            <i class="pi pi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+            <h3>Нет задач</h3>
+            <p>Добавьте первую задачу, чтобы начать работу</p>
+          </div>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <!-- Модальное окно добавления задачи -->
+  <p-dialog header="Добавить новую задачу" [modal]="true" [visible]="displayDialog()" (onHide)="hideAddDialog()"
+    [style]="{ width: '450px' }" [closable]="true">
+
+    <div class="dialog-content">
+      <div class="field">
+        <label for="taskTitle">Название задачи</label>
+        <input id="taskTitle" type="text" pInputText [ngModel]="newTaskTitle()"
+          (ngModelChange)="newTaskTitle.set($event)" placeholder="Введите название задачи..." class="w-full"
+          (keyup.enter)="createTask()" />
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button label="Отмена" icon="pi pi-times" (click)="hideAddDialog()" styleClass="p-button-text">
+      </p-button>
+      <p-button label="Создать" icon="pi pi-check" (click)="createTask()" [disabled]="!newTaskTitle().trim()">
+      </p-button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Toast для уведомлений -->
+  <p-toast></p-toast>
+</div>
